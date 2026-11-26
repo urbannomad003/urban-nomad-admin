@@ -1,0 +1,206 @@
+<section class="mb-6">
+  <!-- Mobile Carousel (< sm) -->
+  <div class="sm:hidden">
+    <div
+      #carouselTrack
+      (scroll)="onCarouselScroll()"
+      class="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      role="region"
+      aria-label="Users overview carousel"
+    >
+      <!-- Slide 1: Total Users -->
+      <div class="w-full shrink-0 snap-center border border-stone-200 bg-white p-5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+            Total Users
+          </span>
+          <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+            <lucide-icon [img]="icons.Users" class="h-4 w-4"></lucide-icon>
+          </div>
+        </div>
+
+        @if (isLoading()) {
+          <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+        } @else {
+          <p class="mt-3 text-2xl font-semibold text-stone-900">{{ totalUsers() }}</p>
+          <p class="mt-1 text-xs text-stone-500">Registered accounts in Firestore</p>
+        }
+      </div>
+
+      <!-- Slide 2: New Users (Last 3 Months) -->
+      <div class="w-full shrink-0 snap-center border border-stone-200 bg-white p-5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+            New Users (3 Months)
+          </span>
+          <div class="border border-amber-200 bg-amber-50 p-2 text-amber-600">
+            <lucide-icon [img]="icons.UserPlus" class="h-4 w-4"></lucide-icon>
+          </div>
+        </div>
+
+        @if (isLoading()) {
+          <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+        } @else {
+          <p class="mt-3 text-2xl font-semibold text-stone-900">{{ newUsersLast3Months() }}</p>
+          <p class="mt-1 text-xs text-stone-500">Joined within the last 3 months</p>
+        }
+      </div>
+
+      <!-- Slide 3: Loyalty Members -->
+      <div class="w-full shrink-0 snap-center border border-stone-200 bg-white p-5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+            Loyalty Enrolled
+          </span>
+          <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+            <lucide-icon [img]="icons.Award" class="h-4 w-4"></lucide-icon>
+          </div>
+        </div>
+
+        @if (isLoading()) {
+          <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+        } @else {
+          <p class="mt-3 text-2xl font-semibold text-stone-900">{{ loyaltyMembersCount() }}</p>
+          <p class="mt-1 text-xs text-stone-500">Users with active loyalty membership</p>
+        }
+      </div>
+
+      <!-- Slide 4: Verified Emails -->
+      <div class="w-full shrink-0 snap-center border border-stone-200 bg-white p-5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+            Verified Emails
+          </span>
+          <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+            <lucide-icon [img]="icons.ShieldCheck" class="h-4 w-4"></lucide-icon>
+          </div>
+        </div>
+
+        @if (isLoading()) {
+          <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+        } @else {
+          <p class="mt-3 text-2xl font-semibold text-stone-900">{{ verifiedEmailsCount() }}</p>
+          <p class="mt-1 text-xs text-stone-500">Accounts with verified email address</p>
+        }
+      </div>
+    </div>
+
+    <!-- Carousel Controls & Dots -->
+    <div class="mt-3 flex items-center justify-between px-2">
+      <div class="flex items-center gap-1.5">
+        @for (idx of cardIndices; track idx) {
+          <button
+            type="button"
+            (click)="scrollToSlide(idx)"
+            [attr.aria-label]="'Go to card ' + (idx + 1)"
+            [class]="
+              activeSlide() === idx
+                ? 'h-2 w-5 bg-amber-500 transition-all'
+                : 'h-2 w-2 bg-stone-300 transition-all hover:bg-stone-400'
+            "
+          ></button>
+        }
+      </div>
+
+      <div class="flex items-center gap-2 pr-1">
+        <button
+          type="button"
+          (click)="prevSlide()"
+          [disabled]="activeSlide() === 0"
+          aria-label="Previous metric card"
+          class="inline-flex items-center justify-center border border-stone-200 bg-white p-1.5 text-stone-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <lucide-icon [img]="icons.ChevronLeft" class="h-3.5 w-3.5"></lucide-icon>
+        </button>
+        <button
+          type="button"
+          (click)="nextSlide()"
+          [disabled]="activeSlide() === cardIndices.length - 1"
+          aria-label="Next metric card"
+          class="inline-flex items-center justify-center border border-stone-200 bg-white p-1.5 text-stone-700 transition-colors hover:bg-stone-50 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <lucide-icon [img]="icons.ChevronRight" class="h-3.5 w-3.5"></lucide-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop / Tablet Grid (>= sm) -->
+  <div class="hidden grid-cols-1 gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+    <!-- Total Users -->
+    <div class="border border-stone-200 bg-white p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+          Total Users
+        </span>
+        <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+          <lucide-icon [img]="icons.Users" class="h-4 w-4"></lucide-icon>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+      } @else {
+        <p class="mt-3 text-2xl font-semibold text-stone-900">{{ totalUsers() }}</p>
+        <p class="mt-1 text-xs text-stone-500">Registered accounts in Firestore</p>
+      }
+    </div>
+
+    <!-- New Users (Last 3 Months) -->
+    <div class="border border-stone-200 bg-white p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+          New Users (3 Months)
+        </span>
+        <div class="border border-amber-200 bg-amber-50 p-2 text-amber-600">
+          <lucide-icon [img]="icons.UserPlus" class="h-4 w-4"></lucide-icon>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+      } @else {
+        <p class="mt-3 text-2xl font-semibold text-stone-900">{{ newUsersLast3Months() }}</p>
+        <p class="mt-1 text-xs text-stone-500">Joined within the last 3 months</p>
+      }
+    </div>
+
+    <!-- Loyalty Members -->
+    <div class="border border-stone-200 bg-white p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+          Loyalty Enrolled
+        </span>
+        <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+          <lucide-icon [img]="icons.Award" class="h-4 w-4"></lucide-icon>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+      } @else {
+        <p class="mt-3 text-2xl font-semibold text-stone-900">{{ loyaltyMembersCount() }}</p>
+        <p class="mt-1 text-xs text-stone-500">Users with active loyalty membership</p>
+      }
+    </div>
+
+    <!-- Verified Emails -->
+    <div class="border border-stone-200 bg-white p-5">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-semibold tracking-wider text-stone-500 uppercase">
+          Verified Emails
+        </span>
+        <div class="border border-stone-200 bg-stone-50 p-2 text-amber-600">
+          <lucide-icon [img]="icons.ShieldCheck" class="h-4 w-4"></lucide-icon>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+        <div class="mt-3 h-8 w-20 animate-pulse bg-stone-100"></div>
+      } @else {
+        <p class="mt-3 text-2xl font-semibold text-stone-900">{{ verifiedEmailsCount() }}</p>
+        <p class="mt-1 text-xs text-stone-500">Accounts with verified email address</p>
+      }
+    </div>
+  </div>
+</section>

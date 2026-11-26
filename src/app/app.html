@@ -1,0 +1,10 @@
+@if (showShell()) {
+  <div class="min-h-screen bg-stone-50 text-stone-900 lg:flex">
+    <app-nav-bar />
+    <main class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8">
+      <router-outlet />
+    </main>
+  </div>
+} @else {
+  <router-outlet />
+}

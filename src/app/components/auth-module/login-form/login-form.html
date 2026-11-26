@@ -1,0 +1,101 @@
+<section class="w-full max-w-md border border-stone-200 bg-white p-6 sm:p-8">
+  <div class="mb-6 flex flex-col items-start border-b border-stone-200 pb-5">
+    <img
+      src="/logo-transparent-background.png"
+      alt="Urban Nomad"
+      class="mb-4 h-9 w-auto object-contain"
+    />
+    <h1 class="text-lg font-semibold tracking-tight text-stone-900">Admin Sign In</h1>
+    <p class="mt-1 text-xs text-stone-500">
+      Sign in with your administrator credentials to manage Urban Nomad.
+    </p>
+  </div>
+
+  @if (errorMessage()) {
+    <div
+      role="alert"
+      class="mb-4 border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-red-700"
+    >
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <form (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label for="login-email" class="block text-xs font-medium text-stone-700">
+        Email Address
+      </label>
+      <div class="relative mt-1.5">
+        <lucide-icon
+          [img]="icons.Mail"
+          class="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-stone-400"
+        ></lucide-icon>
+        <input
+          id="login-email"
+          name="loginEmail"
+          type="email"
+          autocomplete="email"
+          [(ngModel)]="email"
+          required
+          placeholder="admin@urbannomad.co.za"
+          style="padding-left: 3.25rem; padding-right: 1rem;"
+          class="w-full border border-stone-200 bg-white py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+        />
+      </div>
+    </div>
+
+    <div>
+      <div class="flex items-center justify-between">
+        <label for="login-password" class="block text-xs font-medium text-stone-700">
+          Password
+        </label>
+        <a
+          routerLink="/reset-password"
+          class="text-xs font-medium text-amber-700 transition-colors hover:text-amber-800 hover:underline"
+        >
+          Forgot password?
+        </a>
+      </div>
+
+      <div class="relative mt-1.5">
+        <lucide-icon
+          [img]="icons.Lock"
+          class="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-stone-400"
+        ></lucide-icon>
+        <input
+          id="login-password"
+          name="loginPassword"
+          [type]="showPassword ? 'text' : 'password'"
+          autocomplete="current-password"
+          [(ngModel)]="password"
+          required
+          placeholder="••••••••"
+          style="padding-left: 3.25rem; padding-right: 3rem;"
+          class="w-full border border-stone-200 bg-white py-2.5 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+        />
+        <button
+          type="button"
+          (click)="togglePasswordVisibility()"
+          [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          class="absolute top-1/2 right-3 -translate-y-1/2 p-1 text-stone-400 transition-colors hover:text-stone-700"
+        >
+          <lucide-icon
+            [img]="showPassword ? icons.EyeOff : icons.Eye"
+            class="h-4 w-4"
+          ></lucide-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="pt-2">
+      <button
+        type="submit"
+        [disabled]="isSubmitting()"
+        class="inline-flex w-full items-center justify-center gap-2 bg-amber-500 px-4 py-2.5 text-xs font-semibold tracking-wide text-stone-950 uppercase transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        <lucide-icon [img]="icons.LogIn" class="h-4 w-4"></lucide-icon>
+        <span>{{ isSubmitting() ? 'Signing In...' : 'Sign In' }}</span>
+      </button>
+    </div>
+  </form>
+</section>

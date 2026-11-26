@@ -1,0 +1,170 @@
+<!-- Mobile Top Bar -->
+<header
+  class="sticky top-0 z-30 grid grid-cols-[2.25rem_1fr_2.25rem] items-center border-b border-stone-200 bg-white px-4 py-3 text-stone-900 lg:hidden"
+>
+  <button
+    type="button"
+    (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="isMobileMenuOpen()"
+    aria-controls="mobile-admin-drawer"
+    aria-label="Toggle navigation menu"
+    class="inline-flex h-9 w-9 shrink-0 items-center justify-center text-stone-800 transition-colors hover:text-amber-600"
+  >
+    <lucide-icon
+      [img]="isMobileMenuOpen() ? icons.X : icons.Menu"
+      class="h-5 w-5"
+    ></lucide-icon>
+  </button>
+
+  <a
+    routerLink="/products"
+    (click)="closeMobileMenu()"
+    class="inline-flex items-center justify-self-center"
+    aria-label="Admin Home"
+  >
+    <img
+      src="/logo-transparent-background.png"
+      alt="Logo"
+      class="h-8 w-auto object-contain"
+    />
+  </a>
+
+  <span class="h-9 w-9" aria-hidden="true"></span>
+</header>
+
+<!-- Mobile Backdrop -->
+@if (isMobileMenuOpen()) {
+  <div
+    (click)="closeMobileMenu()"
+    class="fixed inset-0 z-40 bg-stone-950/40 lg:hidden"
+    aria-hidden="true"
+  ></div>
+}
+
+<!-- Mobile Slide-Out Drawer -->
+<aside
+  id="mobile-admin-drawer"
+  [class]="
+    'fixed top-0 left-0 z-50 flex h-full w-72 flex-col border-r border-stone-200 bg-white text-stone-800 transition-transform duration-200 lg:hidden ' +
+    (isMobileMenuOpen() ? 'translate-x-0' : '-translate-x-full')
+  "
+  aria-label="Mobile Admin Navigation"
+>
+  <div class="flex items-center justify-between border-b border-stone-200 px-5 py-4">
+    <img
+      src="/logo-transparent-background.png"
+      alt="Logo"
+      class="h-9 w-auto object-contain"
+    />
+
+    <button
+      type="button"
+      (click)="closeMobileMenu()"
+      aria-label="Close navigation menu"
+      class="inline-flex h-8 w-8 items-center justify-center text-stone-600 transition-colors hover:text-stone-900"
+    >
+      <lucide-icon [img]="icons.X" class="h-4 w-4"></lucide-icon>
+    </button>
+  </div>
+
+  <nav class="flex-1 space-y-1 py-4">
+    @for (item of navItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="border-l-4 border-amber-500 bg-amber-100/80 text-stone-950 font-semibold"
+        [routerLinkActiveOptions]="{ exact: false }"
+        (click)="closeMobileMenu()"
+        class="group flex w-full items-center gap-3 border-l-4 border-transparent px-5 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-950"
+      >
+        @switch (item.icon) {
+          @case ('package') {
+            <lucide-icon
+              [img]="icons.Package"
+              class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-amber-600"
+            ></lucide-icon>
+          }
+          @case ('users') {
+            <lucide-icon
+              [img]="icons.Users"
+              class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-amber-600"
+            ></lucide-icon>
+          }
+        }
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="border-t border-stone-200 p-3">
+    <button
+      type="button"
+      (click)="logout()"
+      [disabled]="isLoggingOut()"
+      class="group flex w-full items-center gap-3 border border-transparent px-3 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <lucide-icon
+        [img]="icons.LogOut"
+        class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-red-600"
+      ></lucide-icon>
+      <span>{{ isLoggingOut() ? 'Logging out...' : 'Logout' }}</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Desktop Fixed Sidebar -->
+<aside
+  class="hidden lg:flex lg:min-h-screen lg:w-64 lg:shrink-0 lg:flex-col lg:border-r lg:border-stone-200 lg:bg-white lg:text-stone-800"
+  aria-label="Desktop Admin Navigation"
+>
+  <div class="flex items-center border-b border-stone-200 px-6 py-5">
+    <a routerLink="/products" class="inline-flex items-center" aria-label="Admin Home">
+      <img
+        src="/logo-transparent-background.png"
+        alt="Logo"
+        class="h-10 w-auto object-contain"
+      />
+    </a>
+  </div>
+
+  <nav class="flex-1 space-y-1 py-4">
+    @for (item of navItems; track item.route) {
+      <a
+        [routerLink]="item.route"
+        routerLinkActive="border-l-4 border-amber-500 bg-amber-100/80 text-stone-950 font-semibold"
+        [routerLinkActiveOptions]="{ exact: false }"
+        class="group flex w-full items-center gap-3 border-l-4 border-transparent px-6 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-stone-950"
+      >
+        @switch (item.icon) {
+          @case ('package') {
+            <lucide-icon
+              [img]="icons.Package"
+              class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-amber-600"
+            ></lucide-icon>
+          }
+          @case ('users') {
+            <lucide-icon
+              [img]="icons.Users"
+              class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-amber-600"
+            ></lucide-icon>
+          }
+        }
+        <span>{{ item.label }}</span>
+      </a>
+    }
+  </nav>
+
+  <div class="border-t border-stone-200 p-3">
+    <button
+      type="button"
+      (click)="logout()"
+      [disabled]="isLoggingOut()"
+      class="group flex w-full items-center gap-3 border border-transparent px-3 py-2.5 text-sm font-medium text-stone-600 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      <lucide-icon
+        [img]="icons.LogOut"
+        class="h-4 w-4 shrink-0 text-stone-500 transition-colors group-hover:text-red-600"
+      ></lucide-icon>
+      <span>{{ isLoggingOut() ? 'Logging out...' : 'Logout' }}</span>
+    </button>
+  </div>
+</aside>

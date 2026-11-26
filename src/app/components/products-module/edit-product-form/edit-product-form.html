@@ -1,0 +1,274 @@
+@if (product(); as current) {
+  <section class="max-h-[90vh] overflow-y-auto border border-stone-200 bg-white p-5 sm:p-6">
+    <div class="mb-5 flex items-center justify-between border-b border-stone-200 pb-3.5">
+      <div>
+        <h2 class="text-base font-semibold text-stone-900">Edit Product</h2>
+        <p class="mt-0.5 text-xs text-stone-500">
+          Updating <span class="font-medium text-stone-800">{{ current.title }}</span>
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="cancelled.emit()"
+        aria-label="Close edit form"
+        class="p-1.5 text-stone-500 transition-colors hover:text-stone-900"
+      >
+        <lucide-icon [img]="icons.X" class="h-4 w-4"></lucide-icon>
+      </button>
+    </div>
+
+    @if (errorMessage()) {
+      <div class="mb-4 border border-red-200 bg-red-50 px-3.5 py-2.5 text-xs font-medium text-red-700">
+        {{ errorMessage() }}
+      </div>
+    }
+
+    <form (ngSubmit)="onSubmit()" class="space-y-4">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="edit-title" class="block text-xs font-medium text-stone-700">
+            Title
+          </label>
+          <input
+            id="edit-title"
+            name="editTitle"
+            type="text"
+            [(ngModel)]="title"
+            required
+            placeholder="e.g. Nomad Crossbody Tote"
+            class="mt-1.5 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="edit-color" class="block text-xs font-medium text-stone-700">
+            Color
+          </label>
+          <input
+            id="edit-color"
+            name="editColor"
+            type="text"
+            [(ngModel)]="color"
+            required
+            placeholder="e.g. Obsidian / Sand"
+            class="mt-1.5 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="edit-price" class="block text-xs font-medium text-stone-700">
+            Base Price (R)
+          </label>
+          <input
+            id="edit-price"
+            name="editPrice"
+            type="number"
+            step="0.01"
+            min="0"
+            [(ngModel)]="price"
+            required
+            placeholder="R 0.00"
+            class="mt-1.5 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label for="edit-section" class="block text-xs font-medium text-stone-700">
+            Storefront Section
+          </label>
+          <select
+            id="edit-section"
+            name="editSection"
+            [(ngModel)]="section"
+            class="mt-1.5 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-amber-500 focus:outline-none"
+          >
+            @for (sec of sections; track sec.value) {
+              <option [value]="sec.value">{{ sec.label }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="border border-stone-200 bg-stone-50/60 p-3.5">
+        <label class="inline-flex cursor-pointer items-center gap-2.5 text-xs font-medium text-stone-800">
+          <input
+            type="checkbox"
+            name="editIsDiscounted"
+            [(ngModel)]="isDiscounted"
+            class="h-4 w-4 border-stone-300 text-amber-600 focus:ring-amber-500"
+          />
+          <span>Item is on discount (base price shows struck through on storefront; enter discounted price below)</span>
+        </label>
+
+        @if (isDiscounted) {
+          <div class="mt-3 max-w-xs">
+            <label for="edit-discounted-price" class="block text-xs font-medium text-stone-700">
+              Discounted / New Price (R)
+            </label>
+            <input
+              id="edit-discounted-price"
+              name="editDiscountedPrice"
+              type="number"
+              step="0.01"
+              min="0.01"
+              [(ngModel)]="discountedPrice"
+              placeholder="R 0.00"
+              class="mt-1 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+            />
+          </div>
+        }
+      </div>
+
+      <!-- Star Rating -->
+      <div class="border border-stone-200 bg-white p-3.5">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <label for="edit-rating" class="block text-xs font-medium text-stone-700">
+              Star Rating (0 – 5 for storefront stars)
+            </label>
+            <div class="mt-2 flex items-center gap-1">
+              @for (star of starValues; track star) {
+                <button
+                  type="button"
+                  (click)="setRating(star)"
+                  [attr.aria-label]="'Set rating to ' + star + ' stars'"
+                  class="p-1 transition-colors"
+                >
+                  <lucide-icon
+                    [img]="icons.Star"
+                    class="h-4 w-4"
+                    [class]="(rating ?? 0) >= star ? 'fill-amber-500 text-amber-500' : 'text-stone-300'"
+                  ></lucide-icon>
+                </button>
+              }
+              @if (rating !== null) {
+                <button
+                  type="button"
+                  (click)="clearRating()"
+                  class="ml-2 text-[11px] font-medium text-stone-500 underline hover:text-stone-800"
+                >
+                  Clear
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="w-28">
+            <label for="edit-rating" class="block text-[11px] font-medium text-stone-500">
+              Rating Value
+            </label>
+            <input
+              id="edit-rating"
+              name="editRating"
+              type="number"
+              min="0"
+              max="5"
+              step="0.5"
+              [(ngModel)]="rating"
+              placeholder="0 – 5"
+              class="mt-1 w-full border border-stone-200 bg-white px-2.5 py-1.5 text-xs text-stone-900 placeholder:text-stone-400 focus:border-amber-500 focus:outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <label for="edit-stock-count" class="block text-xs font-medium text-stone-700">
+            Stock Count
+          </label>
+          <input
+            id="edit-stock-count"
+            name="editStockCount"
+            type="number"
+            min="0"
+            [ngModel]="stockCount"
+            (ngModelChange)="onStockCountChange($event)"
+            required
+            class="mt-1.5 w-full border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 focus:border-amber-500 focus:outline-none"
+          />
+        </div>
+
+        <div class="flex items-end pb-1">
+          <label
+            [class]="
+              isOutOfStock
+                ? 'inline-flex cursor-not-allowed items-center gap-2.5 text-xs font-medium text-stone-400 opacity-60'
+                : 'inline-flex cursor-pointer items-center gap-2.5 text-xs font-medium text-stone-800'
+            "
+          >
+            <input
+              type="checkbox"
+              name="editInStock"
+              [(ngModel)]="inStock"
+              [disabled]="isOutOfStock"
+              class="h-4 w-4 border-stone-300 text-amber-600 focus:ring-amber-500 disabled:cursor-not-allowed disabled:bg-stone-100 disabled:opacity-60"
+            />
+            <span>Available in stock</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <label for="edit-image" class="block text-xs font-medium text-stone-700">
+          Replace Image (Optional)
+        </label>
+        <div class="mt-1.5 flex flex-wrap items-center gap-3">
+          <img
+            [src]="previewUrl() || imageUrl"
+            [alt]="title"
+            class="h-14 w-14 border border-stone-200 object-cover"
+          />
+          <label
+            for="edit-image"
+            class="inline-flex cursor-pointer items-center gap-2 border border-stone-200 bg-white px-3.5 py-2 text-xs font-medium text-stone-800 transition-colors hover:border-amber-500 hover:text-amber-700"
+          >
+            <lucide-icon [img]="icons.Upload" class="h-4 w-4 text-amber-600"></lucide-icon>
+            <span>{{ newImageFile ? newImageFile.name : 'Choose New Image' }}</span>
+          </label>
+          <input
+            id="edit-image"
+            name="editImage"
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            class="sr-only"
+          />
+
+          @if (newImageFile) {
+            <button
+              type="button"
+              (click)="clearNewImage()"
+              aria-label="Revert to existing product image"
+              class="inline-flex items-center gap-1 border border-stone-200 bg-stone-50 px-2.5 py-1.5 text-xs text-stone-700 hover:bg-stone-100"
+            >
+              <lucide-icon [img]="icons.X" class="h-3.5 w-3.5"></lucide-icon>
+              <span>Keep Current</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2.5 border-t border-stone-200 pt-4">
+        <button
+          type="button"
+          (click)="cancelled.emit()"
+          class="border border-stone-200 bg-white px-4 py-2 text-xs font-medium text-stone-700 transition-colors hover:bg-stone-100"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          [disabled]="isSaving()"
+          class="inline-flex items-center gap-2 bg-amber-500 px-4 py-2 text-xs font-semibold tracking-wide text-stone-950 uppercase transition-colors hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <lucide-icon [img]="icons.Save" class="h-4 w-4"></lucide-icon>
+          <span>{{ isSaving() ? 'Saving...' : 'Save Changes' }}</span>
+        </button>
+      </div>
+    </form>
+  </section>
+}

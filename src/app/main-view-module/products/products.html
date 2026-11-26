@@ -1,0 +1,74 @@
+<div class="space-y-6">
+  <div class="flex flex-wrap items-center justify-between gap-4 border-b border-stone-200 pb-4">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight text-stone-900">Products</h1>
+      <p class="mt-1 text-xs text-stone-500">
+        Manage Urban Nomad store products, pricing, stock, and storefront sections.
+      </p>
+    </div>
+
+    <button
+      type="button"
+      (click)="openAddModal()"
+      class="inline-flex items-center gap-2 bg-amber-500 px-4 py-2 text-xs font-semibold tracking-wide text-stone-950 uppercase transition-colors hover:bg-amber-600"
+    >
+      <lucide-icon [img]="icons.Plus" class="h-4 w-4"></lucide-icon>
+      <span>Add Product</span>
+    </button>
+  </div>
+
+  <app-products-list-widget
+    (editProduct)="onStartEdit($event)"
+    (deleteProduct)="onStartDelete($event)"
+  />
+
+  @if (isAddModalOpen()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Add New Product Modal"
+    >
+      <div class="my-auto w-full max-w-2xl">
+        <app-new-product-form
+          (productCreated)="closeAllModals()"
+          (cancelled)="closeAllModals()"
+        />
+      </div>
+    </div>
+  }
+
+  @if (editingProduct()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Edit Product Modal"
+    >
+      <div class="my-auto w-full max-w-2xl">
+        <app-edit-product-form
+          [product]="editingProduct()"
+          (saved)="closeAllModals()"
+          (cancelled)="closeAllModals()"
+        />
+      </div>
+    </div>
+  }
+
+  @if (deletingProduct()) {
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/50 p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Delete Product Modal"
+    >
+      <div class="my-auto w-full max-w-lg">
+        <app-delete-product-form
+          [product]="deletingProduct()"
+          (deleted)="closeAllModals()"
+          (cancelled)="closeAllModals()"
+        />
+      </div>
+    </div>
+  }
+</div>
